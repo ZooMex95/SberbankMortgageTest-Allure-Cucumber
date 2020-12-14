@@ -1,13 +1,11 @@
 package ru.homework.framework.pages;
 
-import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import ru.homework.framework.utils.MyAllureListener;
 
 
 import java.util.List;
@@ -59,7 +57,7 @@ public class MortgagePage extends BasePage {
     }
 
     @Step("Включение кнопки {nameOfButton}")
-    public MortgagePage buttonGetOn(String nameOfButton) throws InterruptedException {
+    public MortgagePage buttonGetOn(String nameOfButton){
         getDriver().switchTo().frame(blockInputFields);
         for (WebElement element: listOfNameButtons) {
             WebElement currentElement = element.findElement(By.xpath("./../../span/label/div/input"));
@@ -68,7 +66,11 @@ public class MortgagePage extends BasePage {
                     currentElement.click();
                     Assert.assertEquals("Положение кнопки " + element.getText() + " не верное",
                             "true", currentElement.getAttribute("aria-checked"));
-                    Thread.sleep(2000);
+                    try{
+                        Thread.sleep(2000);             // Метод включения кнопки по названию,
+                    } catch (InterruptedException e) {         //при включении сумма необходимого дохода, процентная ставка
+                        e.printStackTrace();                    // и ежемесячный платеж меняются. Делают это анимацией, не нашел иного
+                    }                                           // решения, чтобы дождаться наступления конца анимации.
                 }
             }
         }
@@ -77,9 +79,8 @@ public class MortgagePage extends BasePage {
     }
 
     @Step("Выключение кнопки {nameOfButton}")
-    public MortgagePage buttonGetOff(String nameOfButton) throws InterruptedException {
+    public MortgagePage buttonGetOff(String nameOfButton) {
         getDriver().switchTo().frame(blockInputFields);
-        //String currentPercent = getDriver().findElement(By.xpath("//span[text()='Процентная ставка']/../span[@data-e2e-id]/span")).getText();
         for (WebElement element: listOfNameButtons) {
             WebElement currentElement = element.findElement(By.xpath("./../../span/label/div/input"));
             if (element.getText().equalsIgnoreCase(nameOfButton)) {
@@ -87,7 +88,11 @@ public class MortgagePage extends BasePage {
                     currentElement.click();
                     Assert.assertEquals("Положение кнопки " + element.getText() + " не верное",
                             "false", currentElement.getAttribute("aria-checked"));
-                    Thread.sleep(2000);
+                    try{
+                        Thread.sleep(2000);             // аналогичная ситуация как с методом buttonGetOn
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
